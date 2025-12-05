@@ -1,0 +1,37 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #4F46E5; /* Indigo 600 */
+  --primary-dark: #3730A3; /* Indigo 800 */
+  --secondary: #8B5CF6; /* Violet 500 */
+  --accent: #F472B6; /* Pink 400 */
+  --background: #0F172A; /* Slate 900 */
+  --surface: #1E293B; /* Slate 800 */
+  --text-main: #F8FAFC; /* Slate 50 */
+  --text-muted: #94A3B8; /* Slate 400 */
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text-main);
+  font-family: "Montserrat", sans-serif;
+  overflow-x: hidden;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-indigo-500/50;
+  }
+  .btn-secondary {
+    @apply bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300;
+  }
+  .input-field {
+    @apply w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all;
+  }
+  .glass-panel {
+    @apply bg-slate-800/50 backdrop-blur-md border border-white/10 rounded-xl shadow-xl;
+  }
+}
