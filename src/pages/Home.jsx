@@ -34,6 +34,16 @@ const Home = () => {
   const [sortOption, setSortOption] = useState("createdAt-desc");
   const [pagination, setPagination] = useState({ total: 0, pages: 1 });
 
+  // Debounced search effect
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      setCurrentPage(1); // Reset to first page on search
+      fetchBooks();
+    }, 500); // 500ms debounce delay
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
+
   useEffect(() => {
     fetchBooks();
   }, [currentPage, itemsPerPage, selectedCategory, sortOption]);
@@ -66,12 +76,6 @@ const Home = () => {
     }
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setCurrentPage(1);
-    fetchBooks();
-  };
-
   const handleBorrow = async (bookId) => {
     if (!isAuthenticated) {
       toast.info("Please login to borrow books");
@@ -92,7 +96,7 @@ const Home = () => {
       <div className="space-y-8">
         {/* Hero Section */}
         <div className="glass-panel p-8 text-center">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             Welcome to GoodLIB
           </h1>
           <p className="text-gray-400 text-lg">
@@ -103,7 +107,7 @@ const Home = () => {
         {/* Search and Filters */}
         <div className="glass-panel p-6 space-y-4">
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="relative">
+          <div className="relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <input
               type="text"
@@ -112,7 +116,7 @@ const Home = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
             />
-          </form>
+          </div>
 
           {/* Category Filter */}
           <div>
