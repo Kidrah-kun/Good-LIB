@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-toastify";
-import { Users, UserPlus, X, Upload, Trash2 } from "lucide-react";
+import { Users, UserPlus, X, Upload, Trash2, ShieldCheck } from "lucide-react";
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
@@ -9,6 +9,8 @@ const UserManagement = () => {
     const [showModal, setShowModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
+    const [showPromoteModal, setShowPromoteModal] = useState(false);
+    const [userToPromote, setUserToPromote] = useState(null);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -104,6 +106,23 @@ const UserManagement = () => {
             fetchUsers();
         } catch (err) {
             toast.error(err.response?.data?.message || "Failed to delete user");
+        }
+    };
+
+    const handlePromoteClick = (user) => {
+        setUserToPromote(user);
+        setShowPromoteModal(true);
+    };
+
+    const handlePromoteConfirm = async () => {
+        try {
+            await axiosInstance.put(`/user/promote-to-admin/${userToPromote._id}`);
+            toast.success("User promoted to admin successfully!");
+            setShowPromoteModal(false);
+            setUserToPromote(null);
+            fetchUsers();
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to promote user");
         }
     };
 
@@ -204,15 +223,26 @@ const UserManagement = () => {
                                             {new Date(user.createdAt).toLocaleDateString()}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                            {user.role !== "Admin" && (
-                                                <button
-                                                    onClick={() => handleDeleteClick(user)}
-                                                    className="text-red-400 hover:text-red-300 transition-colors"
-                                                    title="Delete user"
-                                                >
-                                                    <Trash2 className="h-5 w-5" />
-                                                </button>
-                                            )}
+                                            <div className="flex items-center space-x-3">
+                                                {user.role !== "Admin" && (
+                                                    <>
+                                                        <button
+                                                            onClick={() => handlePromoteClick(user)}
+                                                            className="text-indigo-400 hover:text-indigo-300 transition-colors"
+                                                            title="Promote to admin"
+                                                        >
+                                                            <ShieldCheck className="h-5 w-5" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteClick(user)}
+                                                            className="text-red-400 hover:text-red-300 transition-colors"
+                                                            title="Delete user"
+                                                        >
+                                                            <Trash2 className="h-5 w-5" />
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -358,6 +388,41 @@ const UserManagement = () => {
                                 onClick={() => {
                                     setShowDeleteModal(false);
                                     setUserToDelete(null);
+                                }}
+                                className="flex-1 btn-secondary"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Promote to Admin Confirmation Modal */}
+            {showPromoteModal && userToPromote && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="glass-panel p-8 max-w-md w-full">
+                        <div className="flex items-center justify-center mb-4">
+                            <div className="p-3 bg-indigo-500/20 rounded-full">
+                                <ShieldCheck className="h-8 w-8 text-indigo-400" />
+                            </div>
+                        </div>
+                        <h2 className="text-2xl font-bold text-white mb-4 text-center">Promote to Admin</h2>
+                        <p className="text-gray-300 mb-6 text-center">
+                            Are you sure you want to promote <span className="font-semibold text-white">{userToPromote.name}</span> to admin?
+                            They will have full administrative privileges.
+                        </p>
+                        <div className="flex space-x-4">
+                            <button
+                                onClick={handlePromoteConfirm}
+                                className="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+                            >
+                                Promote
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowPromoteModal(false);
+                                    setUserToPromote(null);
                                 }}
                                 className="flex-1 btn-secondary"
                             >

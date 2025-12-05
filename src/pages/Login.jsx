@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { loginRequest, loginSuccess, loginFailure } from "../store/slices/authSlice";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-toastify";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, ArrowLeft } from "lucide-react";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -36,6 +36,13 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 px-4 py-12">
       <div className="glass-panel p-8 w-full max-w-md">
+        <Link
+          to="/"
+          className="inline-flex items-center space-x-2 text-gray-400 hover:text-white transition-colors mb-6 group"
+        >
+          <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+          <span className="text-sm">Back to Home</span>
+        </Link>
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
           <p className="text-gray-400">Sign in to your account</p>

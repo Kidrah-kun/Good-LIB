@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { registerRequest, registerSuccess, registerFailure, clearErrors, loginSuccess } from "../store/slices/authSlice";
 import { toast } from "react-toastify";
 import axiosInstance from "../api/axiosInstance";
+import { ArrowLeft } from "lucide-react";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -45,6 +46,13 @@ const Register = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-slate-900 px-4">
       <div className="glass-panel p-8 max-w-md w-full">
+        <Link
+          to="/"
+          className="inline-flex items-center space-x-2 text-gray-400 hover:text-white transition-colors mb-6 group"
+        >
+          <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+          <span className="text-sm">Back to Home</span>
+        </Link>
         <h2 className="text-3xl font-bold text-center mb-6 text-white">Create Account</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
