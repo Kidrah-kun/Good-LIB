@@ -94,9 +94,13 @@ const Navbar = () => {
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                     className="flex items-center gap-2 text-sm text-neutral-300 hover:text-white px-3 py-1.5 rounded-md hover:bg-neutral-800 transition-colors"
                                 >
-                                    <div className="w-6 h-6 rounded-full bg-teal-600 flex items-center justify-center text-xs font-medium text-white">
-                                        {user?.name?.charAt(0)?.toUpperCase()}
-                                    </div>
+                                    {user?.avatar?.url ? (
+                                        <img src={user.avatar.url} alt={user.name} className="w-6 h-6 rounded-full object-cover bg-neutral-800" />
+                                    ) : (
+                                        <div className="w-6 h-6 rounded-full bg-teal-600 flex items-center justify-center text-xs font-medium text-white">
+                                            {user?.name?.charAt(0)?.toUpperCase()}
+                                        </div>
+                                    )}
                                     <span className="font-medium">{user?.name}</span>
                                     <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`} />
                                 </button>
