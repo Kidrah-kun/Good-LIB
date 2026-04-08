@@ -1,16 +1,35 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useRef, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutRequest, logoutSuccess } from "../store/slices/authSlice";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-toastify";
-import { Menu, X, Book, User, LogOut, LayoutDashboard } from "lucide-react";
+import { Menu, X, BookOpen, ChevronDown } from "lucide-react";
 
 const Navbar = () => {
     const { isAuthenticated, user } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const location = useLocation();
+    const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    // Close mobile menu on route change
+    useEffect(() => {
+        setIsMobileOpen(false);
+        setIsDropdownOpen(false);
+    }, [location.pathname]);
 
     const handleLogout = async () => {
         dispatch(logoutRequest());
@@ -24,168 +43,158 @@ const Navbar = () => {
         }
     };
 
+    const isActive = (path) => location.pathname === path;
+
+    const navLink = (to, label) => (
+        <Link
+            to={to}
+            className={`px-3 py-2 text-sm font-medium transition-colors rounded-md ${
+                isActive(to)
+                    ? "text-white bg-neutral-800"
+                    : "text-neutral-400 hover:text-white"
+            }`}
+        >
+            {label}
+        </Link>
+    );
+
     return (
-        <nav className="bg-slate-900/80 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
-                    <div className="flex items-center">
-                        <Link to="/" className="flex items-center space-x-2">
-                            <Book className="h-8 w-8 text-indigo-500" />
-                            <span className="text-xl font-bold text-white tracking-wide">GoodLIB</span>
-                        </Link>
+        <nav className="sticky top-0 z-50 bg-[#0a0a0a]/90 backdrop-blur-md border-b border-neutral-800">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-14">
+                    {/* Logo */}
+                    <Link to="/" className="flex items-center gap-2 group">
+                        <BookOpen className="h-5 w-5 text-teal-500" />
+                        <span className="text-base font-semibold text-white tracking-tight">GoodLIB</span>
+                    </Link>
+
+                    {/* Desktop Nav */}
+                    <div className="hidden md:flex items-center gap-1">
+                        {navLink("/catalog", "Catalog")}
+                        {isAuthenticated && (
+                            <>
+                                {navLink("/dashboard", "Dashboard")}
+                                {navLink("/my-books", "My Books")}
+                                {user?.role === "Admin" && (
+                                    <>
+                                        {navLink("/admin/books", "Books")}
+                                        {navLink("/admin/users", "Users")}
+                                        {navLink("/admin/borrows", "Borrows")}
+                                    </>
+                                )}
+                            </>
+                        )}
                     </div>
 
-                    <div className="hidden md:block">
-                        <div className="ml-10 flex items-baseline space-x-4">
-                            <Link to="/catalog" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                                Catalog
-                            </Link>
-                            {isAuthenticated ? (
-                                <>
-                                    <Link to="/dashboard" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                                        Dashboard
-                                    </Link>
-                                    <Link to="/my-books" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                                        My Books
-                                    </Link>
-                                    {user?.role === "Admin" && (
-                                        <Link to="/admin/books" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                                            Manage Books
-                                        </Link>
-                                    )}
-
-                                    {/* User Menu Dropdown */}
-                                    <div className="relative">
-                                        <button
-                                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                            className="flex items-center space-x-2 text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                                        >
-                                            <User className="h-5 w-5" />
-                                            <span>{user?.name}</span>
-                                        </button>
-
-                                        {isMenuOpen && (
-                                            <div className="absolute right-0 mt-2 w-48 bg-slate-800 border border-white/10 rounded-lg shadow-lg py-1 z-50">
-                                                {user?.role === "Admin" && (
-                                                    <>
-                                                        <Link
-                                                            to="/admin/books"
-                                                            className="block px-4 py-2 text-sm text-gray-300 hover:bg-slate-700 hover:text-white transition-colors"
-                                                            onClick={() => setIsMenuOpen(false)}
-                                                        >
-                                                            Manage Books
-                                                        </Link>
-                                                        <Link
-                                                            to="/admin/users"
-                                                            className="block px-4 py-2 text-sm text-gray-300 hover:bg-slate-700 hover:text-white transition-colors"
-                                                            onClick={() => setIsMenuOpen(false)}
-                                                        >
-                                                            Manage Users
-                                                        </Link>
-                                                    </>
-                                                )}
-                                                <Link
-                                                    to="/password/change"
-                                                    className="block px-4 py-2 text-sm text-gray-300 hover:bg-slate-700 hover:text-white transition-colors"
-                                                    onClick={() => setIsMenuOpen(false)}
-                                                >
-                                                    Change Password
-                                                </Link>
-                                                <button
-                                                    onClick={handleLogout}
-                                                    className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-slate-700 hover:text-white"
-                                                >
-                                                    Logout
-                                                </button>
-                                            </div>
-                                        )}
+                    {/* Right Side */}
+                    <div className="hidden md:flex items-center gap-2">
+                        {isAuthenticated ? (
+                            <div className="relative" ref={dropdownRef}>
+                                <button
+                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    className="flex items-center gap-2 text-sm text-neutral-300 hover:text-white px-3 py-1.5 rounded-md hover:bg-neutral-800 transition-colors"
+                                >
+                                    <div className="w-6 h-6 rounded-full bg-teal-600 flex items-center justify-center text-xs font-medium text-white">
+                                        {user?.name?.charAt(0)?.toUpperCase()}
                                     </div>
-                                </>
-                            ) : (
-                                <>
-                                    <Link to="/login" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                                        Login
-                                    </Link>
-                                    <Link to="/register" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                                        Register
-                                    </Link>
-                                </>
-                            )}
-                        </div>
+                                    <span className="font-medium">{user?.name}</span>
+                                    <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`} />
+                                </button>
+
+                                {isDropdownOpen && (
+                                    <div className="absolute right-0 mt-1 w-52 bg-neutral-900 border border-neutral-800 rounded-lg shadow-2xl py-1 z-50">
+                                        <div className="px-3 py-2 border-b border-neutral-800">
+                                            <p className="text-xs text-neutral-500">{user?.email}</p>
+                                            <p className="text-xs text-neutral-500 mt-0.5">
+                                                Role: <span className="text-teal-400">{user?.role}</span>
+                                            </p>
+                                        </div>
+                                        <Link
+                                            to="/password/change"
+                                            className="block px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors"
+                                        >
+                                            Change Password
+                                        </Link>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-neutral-800 transition-colors"
+                                        >
+                                            Log Out
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <>
+                                <Link to="/login" className="text-sm text-neutral-400 hover:text-white px-3 py-2 transition-colors">
+                                    Log In
+                                </Link>
+                                <Link to="/register" className="btn-primary text-sm !py-2 !px-4">
+                                    Sign Up
+                                </Link>
+                            </>
+                        )}
                     </div>
 
-                    <div className="md:hidden">
-                        <button
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="text-gray-400 hover:text-white focus:outline-none"
-                        >
-                            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                        </button>
-                    </div>
+                    {/* Mobile toggle */}
+                    <button
+                        onClick={() => setIsMobileOpen(!isMobileOpen)}
+                        className="md:hidden text-neutral-400 hover:text-white p-1"
+                    >
+                        {isMobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                    </button>
                 </div>
             </div>
 
             {/* Mobile menu */}
-            {isMenuOpen && (
-                <div className="md:hidden bg-slate-800 border-b border-white/10">
-                    <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                        <Link
-                            to="/catalog"
-                            className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                            onClick={() => setIsMenuOpen(false)}
-                        >
+            {isMobileOpen && (
+                <div className="md:hidden border-t border-neutral-800 bg-[#0a0a0a]">
+                    <div className="px-4 py-3 space-y-1">
+                        <Link to="/catalog" className="block px-3 py-2 text-sm text-neutral-300 hover:text-white rounded-md hover:bg-neutral-800">
                             Catalog
                         </Link>
                         {isAuthenticated ? (
                             <>
-                                <Link
-                                    to="/dashboard"
-                                    className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
+                                <Link to="/dashboard" className="block px-3 py-2 text-sm text-neutral-300 hover:text-white rounded-md hover:bg-neutral-800">
                                     Dashboard
                                 </Link>
-                                <Link
-                                    to="/my-books"
-                                    className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
+                                <Link to="/my-books" className="block px-3 py-2 text-sm text-neutral-300 hover:text-white rounded-md hover:bg-neutral-800">
                                     My Books
                                 </Link>
-                                <Link
-                                    to="/password/change"
-                                    className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
+                                {user?.role === "Admin" && (
+                                    <>
+                                        <Link to="/admin/books" className="block px-3 py-2 text-sm text-neutral-300 hover:text-white rounded-md hover:bg-neutral-800">
+                                            Manage Books
+                                        </Link>
+                                        <Link to="/admin/users" className="block px-3 py-2 text-sm text-neutral-300 hover:text-white rounded-md hover:bg-neutral-800">
+                                            Manage Users
+                                        </Link>
+                                        <Link to="/admin/borrows" className="block px-3 py-2 text-sm text-neutral-300 hover:text-white rounded-md hover:bg-neutral-800">
+                                            Manage Borrows
+                                        </Link>
+                                    </>
+                                )}
+                                <Link to="/password/change" className="block px-3 py-2 text-sm text-neutral-300 hover:text-white rounded-md hover:bg-neutral-800">
                                     Change Password
                                 </Link>
-                                {user?.role === "Admin" && (
-                                    <Link
-                                        to="/admin/books"
-                                        className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                                        onClick={() => setIsMenuOpen(false)}
+                                <div className="border-t border-neutral-800 pt-1 mt-1">
+                                    <button
+                                        onClick={handleLogout}
+                                        className="w-full text-left px-3 py-2 text-sm text-red-400 rounded-md hover:bg-neutral-800"
                                     >
-                                        Manage Books
-                                    </Link>
-                                )}
-                                <button
-                                    onClick={() => {
-                                        handleLogout();
-                                        setIsMenuOpen(false);
-                                    }}
-                                    className="w-full text-left text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                                >
-                                    Logout
-                                </button>
+                                        Log Out
+                                    </button>
+                                </div>
                             </>
                         ) : (
-                            <Link
-                                to="/login"
-                                className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                                onClick={() => setIsMenuOpen(false)}
-                            >
-                                Login
-                            </Link>
+                            <>
+                                <Link to="/login" className="block px-3 py-2 text-sm text-neutral-300 hover:text-white rounded-md hover:bg-neutral-800">
+                                    Log In
+                                </Link>
+                                <Link to="/register" className="block px-3 py-2 text-sm text-teal-400 hover:text-teal-300 rounded-md hover:bg-neutral-800">
+                                    Sign Up
+                                </Link>
+                            </>
                         )}
                     </div>
                 </div>

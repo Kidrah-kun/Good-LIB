@@ -5,11 +5,13 @@ import { useSelector } from "react-redux";
 const ProtectedRoute = ({ children, adminOnly = false }) => {
     const { isAuthenticated, user, loading } = useSelector((state) => state.auth);
 
-    // Show loading spinner while checking auth
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-slate-900">
-                <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+                <div className="flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 border-2 border-teal-600 border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-sm text-neutral-500">Loading...</span>
+                </div>
             </div>
         );
     }

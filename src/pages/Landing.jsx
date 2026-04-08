@@ -1,66 +1,56 @@
 import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { BookOpen, Users, Clock, Shield, Sparkles, ArrowRight } from "lucide-react";
+import { BookOpen, Users, Clock, Shield, ArrowRight, Zap } from "lucide-react";
 
 const Landing = () => {
     const navigate = useNavigate();
     const { isAuthenticated, loading } = useSelector((state) => state.auth);
 
     useEffect(() => {
-        // Only redirect if not loading and user is authenticated
         if (!loading && isAuthenticated) {
             navigate("/dashboard");
         }
     }, [isAuthenticated, loading, navigate]);
+
     const features = [
         {
             icon: BookOpen,
             title: "Vast Collection",
-            description: "Access thousands of books across all genres and categories",
-            color: "from-indigo-500 to-purple-500",
+            description: "Browse and borrow from a curated collection spanning every genre.",
         },
         {
             icon: Clock,
             title: "Easy Borrowing",
-            description: "Borrow and return books with just a few clicks",
-            color: "from-purple-500 to-pink-500",
+            description: "Borrow and return with a single click. Track due dates effortlessly.",
         },
         {
             icon: Users,
-            title: "Community Driven",
-            description: "Join a community of passionate readers and book lovers",
-            color: "from-pink-500 to-rose-500",
+            title: "Community",
+            description: "Join a growing community of readers and book enthusiasts.",
         },
         {
             icon: Shield,
-            title: "Secure & Reliable",
-            description: "Your data is safe with our advanced security measures",
-            color: "from-rose-500 to-orange-500",
+            title: "Reliable",
+            description: "Secure accounts with role-based access and data protection.",
         },
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+        <div className="min-h-screen bg-[#0a0a0a]">
             {/* Navbar */}
-            <nav className="fixed top-0 w-full bg-slate-900/80 backdrop-blur-md border-b border-white/10 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-16">
-                        <div className="flex items-center space-x-2">
-                            <BookOpen className="h-8 w-8 text-indigo-500" />
-                            <span className="text-xl font-bold text-white tracking-wide">GoodLIB</span>
+            <nav className="fixed top-0 w-full bg-[#0a0a0a]/90 backdrop-blur-md border-b border-neutral-800 z-50">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between h-14">
+                        <div className="flex items-center gap-2">
+                            <BookOpen className="h-5 w-5 text-teal-500" />
+                            <span className="text-base font-semibold text-white tracking-tight">GoodLIB</span>
                         </div>
-                        <div className="flex items-center space-x-4">
-                            <Link
-                                to="/login"
-                                className="text-gray-300 hover:text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-                            >
-                                Login
+                        <div className="flex items-center gap-3">
+                            <Link to="/login" className="text-sm text-neutral-400 hover:text-white px-3 py-2 transition-colors">
+                                Log In
                             </Link>
-                            <Link
-                                to="/register"
-                                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-                            >
+                            <Link to="/register" className="bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
                                 Get Started
                             </Link>
                         </div>
@@ -68,63 +58,62 @@ const Landing = () => {
                 </div>
             </nav>
 
-            {/* Hero Section */}
-            <div className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center">
-                        <div className="inline-flex items-center space-x-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-4 py-2 mb-8">
-                            <Sparkles className="h-4 w-4 text-indigo-400" />
-                            <span className="text-indigo-300 text-sm font-medium">Welcome to the Future of Reading</span>
-                        </div>
-                        <h1 className="text-5xl md:text-7xl font-bold mb-6">
-                            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                                Your Digital Library
-                            </span>
-                            <br />
-                            <span className="text-white">Awaits</span>
-                        </h1>
-                        <p className="text-xl text-gray-400 mb-12 max-w-3xl mx-auto">
-                            Discover, borrow, and enjoy thousands of books at your fingertips. Join our community of readers and embark on endless literary adventures.
-                        </p>
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <Link
-                                to="/register"
-                                className="group bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all shadow-lg hover:shadow-indigo-500/50 flex items-center space-x-2"
-                            >
-                                <span>Start Reading Now</span>
-                                <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                            </Link>
-                            <Link
-                                to="/catalog"
-                                className="bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all border border-slate-700"
-                            >
-                                Browse Catalog
-                            </Link>
-                        </div>
+            {/* Hero */}
+            <div className="pt-32 pb-24 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-4xl mx-auto text-center">
+                    <div className="inline-flex items-center gap-2 bg-teal-600/10 border border-teal-600/20 rounded-full px-4 py-1.5 mb-8">
+                        <Zap className="h-3.5 w-3.5 text-teal-400" />
+                        <span className="text-teal-300 text-xs font-medium tracking-wide">Open source library management</span>
+                    </div>
+
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6 leading-[1.1]">
+                        <span className="text-white">Your books,</span>
+                        <br />
+                        <span className="text-neutral-400">organized.</span>
+                    </h1>
+
+                    <p className="text-lg text-neutral-500 mb-10 max-w-2xl mx-auto leading-relaxed">
+                        A clean, modern library system for borrowing and managing books. Built for readers and administrators alike.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                        <Link
+                            to="/register"
+                            className="group bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center gap-2 text-sm"
+                        >
+                            Create Account
+                            <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                        </Link>
+                        <Link
+                            to="/catalog"
+                            className="bg-neutral-900 hover:bg-neutral-800 text-neutral-300 px-6 py-3 rounded-lg font-medium transition-all border border-neutral-800 text-sm"
+                        >
+                            Browse Catalog
+                        </Link>
                     </div>
                 </div>
             </div>
 
-            {/* Features Section */}
-            <div className="py-20 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl font-bold text-white mb-4">Why Choose GoodLIB?</h2>
-                        <p className="text-gray-400 text-lg">Everything you need for a seamless reading experience</p>
+            {/* Features */}
+            <div className="py-20 px-4 sm:px-6 lg:px-8 border-t border-neutral-800/50">
+                <div className="max-w-5xl mx-auto">
+                    <div className="text-center mb-14">
+                        <h2 className="text-2xl font-semibold text-white mb-3">Why GoodLIB?</h2>
+                        <p className="text-neutral-500 text-sm">Everything you need, nothing you don't.</p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {features.map((feature, index) => {
                             const Icon = feature.icon;
                             return (
                                 <div
                                     key={index}
-                                    className="glass-panel p-6 hover:border-indigo-500/50 transition-all duration-300 group"
+                                    className="card p-5 hover:border-neutral-700 transition-all duration-200 group"
                                 >
-                                    <div className={`w - 12 h - 12 rounded - lg bg - gradient - to - r ${feature.color} p - 3 mb - 4 group - hover: scale - 110 transition - transform`}>
-                                        <Icon className="h-full w-full text-white" />
+                                    <div className="w-9 h-9 rounded-lg bg-teal-600/10 flex items-center justify-center mb-4 group-hover:bg-teal-600/15 transition-colors">
+                                        <Icon className="h-4.5 w-4.5 text-teal-400" />
                                     </div>
-                                    <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
-                                    <p className="text-gray-400">{feature.description}</p>
+                                    <h3 className="text-sm font-semibold text-white mb-1.5">{feature.title}</h3>
+                                    <p className="text-xs text-neutral-500 leading-relaxed">{feature.description}</p>
                                 </div>
                             );
                         })}
@@ -132,55 +121,47 @@ const Landing = () => {
                 </div>
             </div>
 
-            {/* Stats Section */}
-            <div className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-800/30">
-                <div className="max-w-7xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            {/* Stats */}
+            <div className="py-16 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-4xl mx-auto">
+                    <div className="card p-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                         <div>
-                            <div className="text-5xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-2">
-                                10,000+
-                            </div>
-                            <div className="text-gray-400 text-lg">Books Available</div>
+                            <div className="text-3xl font-bold text-white mb-1">10K+</div>
+                            <div className="text-xs text-neutral-500 font-medium uppercase tracking-wider">Books</div>
+                        </div>
+                        <div className="md:border-x border-neutral-800">
+                            <div className="text-3xl font-bold text-white mb-1">5K+</div>
+                            <div className="text-xs text-neutral-500 font-medium uppercase tracking-wider">Readers</div>
                         </div>
                         <div>
-                            <div className="text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
-                                5,000+
-                            </div>
-                            <div className="text-gray-400 text-lg">Active Readers</div>
-                        </div>
-                        <div>
-                            <div className="text-5xl font-bold bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent mb-2">
-                                50+
-                            </div>
-                            <div className="text-gray-400 text-lg">Categories</div>
+                            <div className="text-3xl font-bold text-white mb-1">50+</div>
+                            <div className="text-xs text-neutral-500 font-medium uppercase tracking-wider">Categories</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* CTA Section */}
+            {/* CTA */}
             <div className="py-20 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-4xl mx-auto text-center">
-                    <div className="glass-panel p-12">
-                        <h2 className="text-4xl font-bold text-white mb-4">Ready to Start Your Journey?</h2>
-                        <p className="text-gray-400 text-lg mb-8">
-                            Join thousands of readers who have already discovered the joy of digital reading
-                        </p>
-                        <Link
-                            to="/register"
-                            className="inline-flex items-center space-x-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all shadow-lg hover:shadow-indigo-500/50"
-                        >
-                            <span>Create Free Account</span>
-                            <ArrowRight className="h-5 w-5" />
-                        </Link>
-                    </div>
+                <div className="max-w-2xl mx-auto text-center">
+                    <h2 className="text-2xl font-semibold text-white mb-3">Ready to start?</h2>
+                    <p className="text-neutral-500 text-sm mb-8">
+                        Join readers who've already discovered the ease of digital library management.
+                    </p>
+                    <Link
+                        to="/register"
+                        className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-lg font-medium transition-all text-sm"
+                    >
+                        Create Free Account
+                        <ArrowRight className="h-4 w-4" />
+                    </Link>
                 </div>
             </div>
 
             {/* Footer */}
-            <footer className="border-t border-white/10 py-8 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto text-center text-gray-400">
-                    <p>&copy; 2024 GoodLIB. All rights reserved.</p>
+            <footer className="border-t border-neutral-800 py-6 px-4">
+                <div className="max-w-6xl mx-auto text-center">
+                    <p className="text-xs text-neutral-600">&copy; {new Date().getFullYear()} GoodLIB. All rights reserved.</p>
                 </div>
             </footer>
         </div>

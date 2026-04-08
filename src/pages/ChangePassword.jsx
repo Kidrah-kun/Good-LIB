@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-toastify";
-import { Lock } from "lucide-react";
+import { Lock, ArrowLeft } from "lucide-react";
 
 const ChangePassword = () => {
     const navigate = useNavigate();
@@ -24,11 +24,11 @@ const ChangePassword = () => {
             return;
         }
         if (formData.newPassword !== formData.confirmPassword) {
-            toast.error("New password and confirm password do not match");
+            toast.error("New passwords do not match");
             return;
         }
         if (formData.newPassword.length < 8 || formData.newPassword.length > 16) {
-            toast.error("Password must be between 8 and 16 characters");
+            toast.error("Password must be 8–16 characters");
             return;
         }
         setLoading(true);
@@ -38,7 +38,7 @@ const ChangePassword = () => {
                 newPassword: formData.newPassword,
                 confirmNewPassword: formData.confirmPassword,
             });
-            toast.success(data.message || "Password changed successfully");
+            toast.success(data.message || "Password changed!");
             navigate("/dashboard");
         } catch (err) {
             toast.error(err.response?.data?.message || "Failed to change password");
@@ -48,96 +48,85 @@ const ChangePassword = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 px-4 py-12">
-            <div className="glass-panel p-8 w-full max-w-md">
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-500/20 rounded-full mb-4">
-                        <Lock className="h-8 w-8 text-indigo-400" />
-                    </div>
-                    <h1 className="text-3xl font-bold text-white mb-2">Change Password</h1>
-                    <p className="text-gray-400">
-                        Enter your current password and new password
-                    </p>
+        <div className="max-w-md mx-auto">
+            <button
+                onClick={() => navigate("/dashboard")}
+                className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors mb-6 group text-sm"
+            >
+                <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform" />
+                <span>Dashboard</span>
+            </button>
+
+            <div className="mb-6">
+                <div className="w-10 h-10 rounded-lg bg-teal-600/10 flex items-center justify-center mb-4">
+                    <Lock className="h-5 w-5 text-teal-400" />
+                </div>
+                <h1 className="text-xl font-semibold text-white mb-1">Change password</h1>
+                <p className="text-sm text-neutral-500">Update your account password.</p>
+            </div>
+
+            <form onSubmit={handleChangePassword} className="space-y-4">
+                <div>
+                    <label className="block text-xs font-medium text-neutral-400 mb-1.5 uppercase tracking-wider">
+                        Current Password
+                    </label>
+                    <input
+                        type="password"
+                        name="currentPassword"
+                        value={formData.currentPassword}
+                        onChange={handleChange}
+                        className="input-field"
+                        placeholder="Enter current password"
+                        required
+                    />
                 </div>
 
-                <form onSubmit={handleChangePassword} className="space-y-6">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Current Password
-                        </label>
-                        <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                            <input
-                                type="password"
-                                name="currentPassword"
-                                value={formData.currentPassword}
-                                onChange={handleChange}
-                                className="input-field pl-10"
-                                placeholder="Enter current password"
-                                required
-                            />
-                        </div>
-                    </div>
+                <div>
+                    <label className="block text-xs font-medium text-neutral-400 mb-1.5 uppercase tracking-wider">
+                        New Password
+                    </label>
+                    <input
+                        type="password"
+                        name="newPassword"
+                        value={formData.newPassword}
+                        onChange={handleChange}
+                        className="input-field"
+                        placeholder="8–16 characters"
+                        required
+                        minLength={8}
+                        maxLength={16}
+                    />
+                </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                            New Password
-                        </label>
-                        <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                            <input
-                                type="password"
-                                name="newPassword"
-                                value={formData.newPassword}
-                                onChange={handleChange}
-                                className="input-field pl-10"
-                                placeholder="Enter new password"
-                                required
-                                minLength={8}
-                                maxLength={16}
-                            />
-                        </div>
-                    </div>
+                <div>
+                    <label className="block text-xs font-medium text-neutral-400 mb-1.5 uppercase tracking-wider">
+                        Confirm New Password
+                    </label>
+                    <input
+                        type="password"
+                        name="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        className="input-field"
+                        placeholder="Repeat new password"
+                        required
+                        minLength={8}
+                        maxLength={16}
+                    />
+                </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Confirm New Password
-                        </label>
-                        <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                            <input
-                                type="password"
-                                name="confirmPassword"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                className="input-field pl-10"
-                                placeholder="Confirm new password"
-                                required
-                                minLength={8}
-                                maxLength={16}
-                            />
-                        </div>
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full btn-primary"
-                    >
-                        {loading ? "Changing..." : "Change Password"}
-                    </button>
-
-                    <div className="text-center">
-                        <button
-                            type="button"
-                            onClick={() => navigate("/dashboard")}
-                            className="text-indigo-400 hover:text-indigo-300 text-sm"
-                        >
-                            Back to Dashboard
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full btn-primary flex justify-center items-center"
+                >
+                    {loading ? (
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    ) : (
+                        "Update Password"
+                    )}
+                </button>
+            </form>
         </div>
     );
 };

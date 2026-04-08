@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { loginRequest, loginSuccess, loginFailure } from "../store/slices/authSlice";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-toastify";
-import { Mail, Lock, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, BookOpen } from "lucide-react";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -24,7 +24,7 @@ const Login = () => {
     try {
       const { data } = await axiosInstance.post("/auth/login", formData);
       dispatch(loginSuccess(data.user));
-      toast.success("Login successful!");
+      toast.success("Welcome back!");
       navigate("/dashboard");
     } catch (err) {
       dispatch(loginFailure(err.response?.data?.message || "Login failed"));
@@ -35,78 +35,83 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 px-4 py-12">
-      <div className="glass-panel p-8 w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4 py-12">
+      <div className="w-full max-w-sm">
         <Link
           to="/"
-          className="inline-flex items-center space-x-2 text-gray-400 hover:text-white transition-colors mb-6 group"
+          className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors mb-8 group text-sm"
         >
-          <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-          <span className="text-sm">Back to Home</span>
+          <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform" />
+          <span>Home</span>
         </Link>
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-          <p className="text-gray-400">Sign in to your account</p>
+
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-6">
+            <BookOpen className="h-5 w-5 text-teal-500" />
+            <span className="text-sm font-semibold text-white">GoodLIB</span>
+          </div>
+          <h1 className="text-2xl font-semibold text-white mb-1">Welcome back</h1>
+          <p className="text-sm text-neutral-500">Sign in to your account to continue.</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Email Address
+            <label className="block text-xs font-medium text-neutral-400 mb-1.5 uppercase tracking-wider">
+              Email
             </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="input-field pl-10"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="input-field"
+              placeholder="you@example.com"
+              required
+            />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-xs font-medium text-neutral-400 mb-1.5 uppercase tracking-wider">
               Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="input-field pl-10 pr-10"
-                placeholder="Enter your password"
+                className="input-field pr-10"
+                placeholder="••••••••"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition-colors"
               >
-                {showPassword ? (
-                  <EyeOff className="h-5 w-5" />
-                ) : (
-                  <Eye className="h-5 w-5" />
-                )}
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
           </div>
 
-          <button type="submit" disabled={loading} className="w-full btn-primary">
-            {loading ? "Logging in..." : "Login"}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full btn-primary flex justify-center items-center"
+          >
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            ) : (
+              "Sign In"
+            )}
           </button>
 
-          <div className="flex items-center justify-between text-sm">
-            <Link to="/password/forgot" className="text-indigo-400 hover:text-indigo-300">
-              Forgot Password?
+          <div className="flex items-center justify-between text-xs pt-1">
+            <Link to="/password/forgot" className="text-neutral-500 hover:text-teal-400 transition-colors">
+              Forgot password?
             </Link>
-            <Link to="/register" className="text-indigo-400 hover:text-indigo-300">
-              Create Account
+            <Link to="/register" className="text-neutral-500 hover:text-teal-400 transition-colors">
+              Create account
             </Link>
           </div>
         </form>

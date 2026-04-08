@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-toastify";
-import { Clock, TrendingUp, User, BookOpen, Calendar, AlertCircle } from "lucide-react";
+import { Clock, TrendingUp, User, BookOpen, Calendar, AlertCircle, Search, Download } from "lucide-react";
 
 const BorrowManagement = () => {
     const [borrows, setBorrows] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState("active"); // "active" or "all"
+    const [activeTab, setActiveTab] = useState("active");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [returningId, setReturningId] = useState(null);
 
-    useEffect(() => {
-        fetchBorrows();
-    }, []);
+    useEffect(() => { fetchBorrows(); }, []);
 
     const fetchBorrows = async () => {
         setLoading(true);
@@ -19,224 +19,207 @@ const BorrowManagement = () => {
             setBorrows(data.borrows || []);
         } catch (err) {
             toast.error(err.response?.data?.message || "Failed to fetch borrows");
-            console.error("Fetch borrows error:", err);
-        } finally {
-            setLoading(false);
-        }
+        } finally { setLoading(false); }
     };
 
     const handleReturn = async (borrowId) => {
-        if (!window.confirm("Mark this book as returned?")) return;
-
+        setReturningId(borrowId);
         try {
-            await axiosInstance.put(`/borrow/return-borrowed-book/${borrowId}`);
-            toast.success("Book marked as returned!");
+            const { data } = await axiosInstance.put(`/borrow/return-borrowed-book/${borrowId}`);
+            toast.success(data.message || "Book returned!");
             fetchBorrows();
         } catch (err) {
             toast.error(err.response?.data?.message || "Failed to return book");
+        } finally {
+            setReturningId(null);
         }
     };
 
     const activeBorrows = borrows.filter(b => !b.returned);
-    const allBorrows = borrows;
-
-    const isOverdue = (dueDate, returned) => {
-        if (returned) return false;
-        return new Date() > new Date(dueDate);
-    };
-
+    const returnedBorrows = borrows.filter(b => b.returned);
+    const isOverdue = (dueDate, returned) => !returned && new Date() > new Date(dueDate);
     const getDaysOverdue = (dueDate) => {
-        const due = new Date(dueDate);
-        const today = new Date();
-        const diffTime = today - due;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        return diffDays > 0 ? diffDays : 0;
+        const diff = Math.ceil((new Date() - new Date(dueDate)) / (1000 * 60 * 60 * 24));
+        return diff > 0 ? diff : 0;
     };
 
-    const displayBorrows = activeTab === "active" ? activeBorrows : allBorrows;
+    const displayBorrows = activeTab === "active"
+        ? activeBorrows
+        : activeTab === "returned"
+        ? returnedBorrows
+        : borrows;
+
+    const filteredBorrows = displayBorrows.filter(b => {
+        if (!searchTerm) return true;
+        const term = searchTerm.toLowerCase();
+        return (
+            b.userName?.toLowerCase().includes(term) ||
+            b.userEmail?.toLowerCase().includes(term) ||
+            b.bookTitle?.toLowerCase().includes(term)
+        );
+    });
+
+    const totalFines = borrows.reduce((sum, b) => sum + (b.fine || 0), 0);
+
+    const stats = [
+        { title: "Active", value: activeBorrows.length, icon: Clock, color: "bg-blue-600/10 text-blue-400" },
+        { title: "Returned", value: returnedBorrows.length, icon: BookOpen, color: "bg-emerald-600/10 text-emerald-400" },
+        { title: "Overdue", value: activeBorrows.filter(b => isOverdue(b.dueDate, b.returned)).length, icon: AlertCircle, color: "bg-red-600/10 text-red-400" },
+        { title: "Total Fines", value: `$${totalFines.toFixed(2)}`, icon: TrendingUp, color: "bg-amber-600/10 text-amber-400" },
+    ];
+
+    const exportCSV = () => {
+        const headers = "User,Email,Book,Borrowed,Due,Status,Fine\n";
+        const rows = borrows.map(b => 
+            `"${b.userName}","${b.userEmail}","${b.bookTitle}","${new Date(b.borrowedDate).toLocaleDateString()}","${new Date(b.dueDate).toLocaleDateString()}","${b.returned ? 'Returned' : 'Active'}","$${b.fine || 0}"`
+        ).join("\n");
+        const blob = new Blob([headers + rows], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `borrows-${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
 
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Borrow Management</h1>
-                <p className="text-gray-400">Monitor and manage all book borrows</p>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-xl font-semibold text-white mb-0.5">Borrows</h1>
+                    <p className="text-xs text-neutral-500">Monitor and manage all book borrows.</p>
+                </div>
+                <button onClick={exportCSV} className="btn-secondary flex items-center gap-2 text-xs">
+                    <Download className="h-3.5 w-3.5" />
+                    <span>Export CSV</span>
+                </button>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="glass-panel p-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="p-3 rounded-lg bg-blue-500/20 text-blue-400">
-                            <Clock className="h-6 w-6" />
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {stats.map((s, i) => {
+                    const Icon = s.icon;
+                    return (
+                        <div key={i} className="card p-4">
+                            <div className={`w-8 h-8 rounded-lg ${s.color} flex items-center justify-center mb-3`}>
+                                <Icon className="h-4 w-4" />
+                            </div>
+                            <p className="text-2xl font-bold text-white mb-0.5">{s.value}</p>
+                            <p className="text-xs text-neutral-500 font-medium">{s.title}</p>
                         </div>
-                    </div>
-                    <h3 className="text-gray-400 text-sm font-medium mb-1">Active Borrows</h3>
-                    <p className="text-3xl font-bold text-white">{activeBorrows.length}</p>
-                </div>
+                    );
+                })}
+            </div>
 
-                <div className="glass-panel p-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="p-3 rounded-lg bg-purple-500/20 text-purple-400">
-                            <TrendingUp className="h-6 w-6" />
-                        </div>
-                    </div>
-                    <h3 className="text-gray-400 text-sm font-medium mb-1">Total Borrows</h3>
-                    <p className="text-3xl font-bold text-white">{allBorrows.length}</p>
-                </div>
-
-                <div className="glass-panel p-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="p-3 rounded-lg bg-red-500/20 text-red-400">
-                            <AlertCircle className="h-6 w-6" />
-                        </div>
-                    </div>
-                    <h3 className="text-gray-400 text-sm font-medium mb-1">Overdue Books</h3>
-                    <p className="text-3xl font-bold text-white">
-                        {activeBorrows.filter(b => isOverdue(b.dueDate, b.returned)).length}
-                    </p>
-                </div>
+            {/* Search */}
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 h-4 w-4" />
+                <input
+                    type="text"
+                    placeholder="Search by user, email, or book title..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="input-field pl-10 !py-2.5 text-sm"
+                />
             </div>
 
             {/* Tabs */}
-            <div className="flex space-x-4 border-b border-slate-700">
-                <button
-                    onClick={() => setActiveTab("active")}
-                    className={`px-4 py-2 font-medium transition-colors ${activeTab === "active"
-                            ? "text-indigo-400 border-b-2 border-indigo-400"
-                            : "text-gray-400 hover:text-white"
+            <div className="flex gap-1 border-b border-neutral-800">
+                {[
+                    { key: "active", label: "Active", count: activeBorrows.length },
+                    { key: "returned", label: "Returned", count: returnedBorrows.length },
+                    { key: "all", label: "All", count: borrows.length },
+                ].map(tab => (
+                    <button
+                        key={tab.key}
+                        onClick={() => setActiveTab(tab.key)}
+                        className={`px-3 py-2 text-xs font-medium transition-colors border-b-2 -mb-px ${
+                            activeTab === tab.key
+                                ? "text-teal-400 border-teal-400"
+                                : "text-neutral-500 border-transparent hover:text-white"
                         }`}
-                >
-                    Active Borrows ({activeBorrows.length})
-                </button>
-                <button
-                    onClick={() => setActiveTab("all")}
-                    className={`px-4 py-2 font-medium transition-colors ${activeTab === "all"
-                            ? "text-indigo-400 border-b-2 border-indigo-400"
-                            : "text-gray-400 hover:text-white"
-                        }`}
-                >
-                    All Borrows ({allBorrows.length})
-                </button>
+                    >
+                        {tab.label} ({tab.count})
+                    </button>
+                ))}
             </div>
 
-            {/* Borrows Table */}
             {loading ? (
-                <div className="flex justify-center items-center py-20">
-                    <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="flex justify-center py-16">
+                    <div className="w-8 h-8 border-2 border-teal-600 border-t-transparent rounded-full animate-spin"></div>
                 </div>
-            ) : displayBorrows.length === 0 ? (
-                <div className="glass-panel p-12 text-center">
-                    <BookOpen className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-                    <p className="text-gray-400 text-lg">
-                        {activeTab === "active" ? "No active borrows" : "No borrows found"}
-                    </p>
-                    <p className="text-gray-500 text-sm mt-2">
-                        {activeTab === "active"
-                            ? "All books have been returned"
-                            : "No books have been borrowed yet"}
+            ) : filteredBorrows.length === 0 ? (
+                <div className="card p-12 text-center">
+                    <BookOpen className="h-10 w-10 text-neutral-700 mx-auto mb-3" />
+                    <p className="text-sm text-neutral-400">
+                        {searchTerm ? "No borrows match your search" : activeTab === "active" ? "No active borrows" : "No borrows found"}
                     </p>
                 </div>
             ) : (
-                <div className="glass-panel overflow-hidden">
+                <div className="card overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full">
-                            <thead className="bg-slate-800/50">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                                        User
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                                        Book
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                                        Borrowed Date
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                                        Due Date
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                                        Status
-                                    </th>
-                                    {activeTab === "active" && (
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                                            Actions
-                                        </th>
-                                    )}
+                            <thead>
+                                <tr className="border-b border-neutral-800">
+                                    <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider">User</th>
+                                    <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider">Book</th>
+                                    <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider">Borrowed</th>
+                                    <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider">Due</th>
+                                    <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider">Fine</th>
+                                    <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider">Status</th>
+                                    <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider"></th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-700">
-                                {displayBorrows.map((borrow) => {
+                            <tbody className="divide-y divide-neutral-800/50">
+                                {filteredBorrows.map((borrow) => {
                                     const overdue = isOverdue(borrow.dueDate, borrow.returned);
-                                    const daysOverdue = getDaysOverdue(borrow.dueDate);
-
+                                    const daysOver = getDaysOverdue(borrow.dueDate);
                                     return (
-                                        <tr key={borrow._id} className="hover:bg-slate-800/30 transition-colors">
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center">
-                                                    <User className="h-5 w-5 text-gray-400 mr-2" />
-                                                    <div>
-                                                        <div className="text-sm font-medium text-white">
-                                                            {borrow.userName || "Unknown User"}
-                                                        </div>
-                                                        <div className="text-xs text-gray-500">
-                                                            {borrow.userEmail || ""}
-                                                        </div>
-                                                    </div>
+                                        <tr key={borrow._id} className="hover:bg-neutral-800/30 transition-colors">
+                                            <td className="px-4 py-3">
+                                                <div>
+                                                    <div className="text-sm font-medium text-white">{borrow.userName || "User"}</div>
+                                                    <div className="text-[10px] text-neutral-600">{borrow.userEmail || ""}</div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center">
-                                                    <BookOpen className="h-5 w-5 text-gray-400 mr-2" />
-                                                    <span className="text-sm text-white">{borrow.bookTitle}</span>
-                                                </div>
+                                            <td className="px-4 py-3 text-sm text-white max-w-[160px] truncate">{borrow.bookTitle}</td>
+                                            <td className="px-4 py-3 text-sm text-neutral-400">{new Date(borrow.borrowedDate).toLocaleDateString()}</td>
+                                            <td className="px-4 py-3">
+                                                <span className={`text-sm ${overdue ? "text-red-400 font-medium" : "text-neutral-400"}`}>
+                                                    {new Date(borrow.dueDate).toLocaleDateString()}
+                                                </span>
+                                                {overdue && <div className="text-[10px] text-red-500">{daysOver}d overdue</div>}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                                                <div className="flex items-center">
-                                                    <Calendar className="h-4 w-4 mr-2" />
-                                                    {new Date(borrow.borrowedDate).toLocaleDateString()}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                <div className="flex items-center">
-                                                    <Calendar className="h-4 w-4 mr-2 text-gray-400" />
-                                                    <span className={overdue ? "text-red-400 font-semibold" : "text-gray-400"}>
-                                                        {new Date(borrow.dueDate).toLocaleDateString()}
-                                                    </span>
-                                                </div>
-                                                {overdue && (
-                                                    <div className="text-xs text-red-400 mt-1">
-                                                        {daysOverdue} day{daysOverdue > 1 ? 's' : ''} overdue
-                                                    </div>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                {borrow.returned ? (
-                                                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500/20 text-green-400">
-                                                        Returned
-                                                    </span>
-                                                ) : overdue ? (
-                                                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-500/20 text-red-400">
-                                                        Overdue
-                                                    </span>
+                                            <td className="px-4 py-3 text-sm">
+                                                {borrow.fine > 0 ? (
+                                                    <span className="text-amber-400 font-medium">${borrow.fine.toFixed(2)}</span>
                                                 ) : (
-                                                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-500/20 text-blue-400">
-                                                        Active
-                                                    </span>
+                                                    <span className="text-neutral-600">—</span>
                                                 )}
                                             </td>
-                                            {activeTab === "active" && (
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                    {!borrow.returned && (
-                                                        <button
-                                                            onClick={() => handleReturn(borrow._id)}
-                                                            className="text-indigo-400 hover:text-indigo-300 transition-colors"
-                                                        >
-                                                            Mark Returned
-                                                        </button>
-                                                    )}
-                                                </td>
-                                            )}
+                                            <td className="px-4 py-3">
+                                                {borrow.returned ? (
+                                                    <span className="badge badge-green">Returned</span>
+                                                ) : overdue ? (
+                                                    <span className="badge badge-red">Overdue</span>
+                                                ) : (
+                                                    <span className="badge badge-blue">Active</span>
+                                                )}
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                {!borrow.returned && (
+                                                    <button
+                                                        onClick={() => handleReturn(borrow._id)}
+                                                        disabled={returningId === borrow._id}
+                                                        className="px-3 py-1.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white rounded-md transition-colors disabled:opacity-50 flex items-center gap-1"
+                                                    >
+                                                        {returningId === borrow._id ? (
+                                                            <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                                        ) : (
+                                                            "Return"
+                                                        )}
+                                                    </button>
+                                                )}
+                                            </td>
                                         </tr>
                                     );
                                 })}

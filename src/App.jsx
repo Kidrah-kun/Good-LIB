@@ -12,7 +12,8 @@ import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ChangePassword from "./pages/ChangePassword";
-import UserDashboard from "./components/UserDashboard"; // Using component as page for now
+import NotFound from "./pages/NotFound";
+import UserDashboard from "./components/UserDashboard";
 import Layout from "./components/Layout";
 import BookManagement from "./components/BookManagement";
 import MyBorrowedBooks from "./components/MyBorrowedBooks";
@@ -36,7 +37,19 @@ const App = () => {
 
   return (
     <Router>
-      <ToastContainer position="top-right" autoClose={3000} theme="dark" />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        theme="dark"
+        toastStyle={{
+          backgroundColor: "#161616",
+          border: "1px solid #262626",
+          color: "#fafafa",
+          fontSize: "13px",
+          fontFamily: "Inter, sans-serif",
+        }}
+        progressStyle={{ background: "#0d9488" }}
+      />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/catalog" element={<Home />} />
@@ -50,6 +63,7 @@ const App = () => {
         <Route path="/admin/users" element={<Layout><ProtectedRoute adminOnly><UserManagement /></ProtectedRoute></Layout>} />
         <Route path="/admin/borrows" element={<Layout><ProtectedRoute adminOnly><BorrowManagement /></ProtectedRoute></Layout>} />
         <Route path="/my-books" element={<Layout><ProtectedRoute><MyBorrowedBooks /></ProtectedRoute></Layout>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
