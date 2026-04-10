@@ -124,33 +124,33 @@ const UserManagement = () => {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
+        <div className="space-y-12">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-xl font-semibold text-white mb-0.5">Users</h1>
-                    <p className="text-xs text-neutral-500">
-                        {users.length} total · {adminCount} admin{adminCount !== 1 && 's'} · {userCount} user{userCount !== 1 && 's'}
-                        {isMaster && <span className="ml-2 text-amber-400">★ Master</span>}
+                    <h1 className="text-4xl font-black text-white mb-2 tracking-tight">Users</h1>
+                    <p className="text-lg text-neutral-400 font-medium tracking-tight">
+                        {users.length} total members · {adminCount} staff · {userCount} patrons
+                        {isMaster && <span className="ml-3 text-amber-400 font-bold bg-amber-400/10 px-3 py-1 rounded-full text-xs uppercase tracking-widest border border-amber-400/20 shadow-[0_0_15px_rgba(251,191,36,0.1)]">★ Master System Account</span>}
                     </p>
                 </div>
-                <button onClick={() => setShowModal(true)} className="btn-primary flex items-center gap-2 text-sm">
-                    <UserPlus className="h-4 w-4" /><span className="hidden sm:inline">Add Admin</span>
+                <button onClick={() => setShowModal(true)} className="btn-primary flex items-center gap-3">
+                    <UserPlus className="h-5 w-5" /><span className="font-bold">Add New Admin</span>
                 </button>
             </div>
 
             {/* Search */}
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 h-4 w-4" />
+            <div className="relative group">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-500 h-5 w-5 group-focus-within:text-teal-400 transition-colors" />
                 <input
                     type="text"
-                    placeholder="Search by name, email, or role..."
+                    placeholder="Search members by name, email, or access level..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="input-field pl-10 !py-2.5 text-sm"
+                    className="input-field pl-14 py-5 text-lg placeholder:text-neutral-600"
                 />
                 {searchTerm && (
-                    <button onClick={() => setSearchTerm("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white">
-                        <X className="h-4 w-4" />
+                    <button onClick={() => setSearchTerm("")} className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition-colors">
+                        <X className="h-5 w-5" />
                     </button>
                 )}
             </div>
@@ -169,58 +169,60 @@ const UserManagement = () => {
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-neutral-800">
-                                    <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider">User</th>
-                                    <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider hidden sm:table-cell">Email</th>
-                                    <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider">Role</th>
-                                    <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider hidden md:table-cell">Joined</th>
-                                    <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider w-28"></th>
+                                <tr className="border-b border-white/[0.05] bg-white/[0.02]">
+                                    <th className="px-6 py-5 text-left text-xs font-black text-neutral-500 uppercase tracking-[0.2em]">Member Profile</th>
+                                    <th className="px-6 py-5 text-left text-xs font-black text-neutral-500 uppercase tracking-[0.2em] hidden sm:table-cell">Contact Address</th>
+                                    <th className="px-6 py-5 text-left text-xs font-black text-neutral-500 uppercase tracking-[0.2em]">Authorization</th>
+                                    <th className="px-6 py-5 text-left text-xs font-black text-neutral-500 uppercase tracking-[0.2em] hidden md:table-cell">Registered</th>
+                                    <th className="px-6 py-5 text-left text-xs font-black text-neutral-500 uppercase tracking-[0.2em] w-32">Operations</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-neutral-800/50">
                                 {filteredUsers.map((user) => (
-                                    <tr key={user._id} className="hover:bg-neutral-800/30 transition-colors">
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-2.5">
-                                                <img
-                                                    src={user.avatar?.url}
-                                                    alt={user.name}
-                                                    className="h-7 w-7 rounded-full object-cover bg-neutral-800"
-                                                    onError={(e) => {
-                                                        e.target.onerror = null;
-                                                        e.target.style.display = 'none';
-                                                        e.target.nextSibling.style.display = 'flex';
-                                                    }}
-                                                />
-                                                <div className="h-7 w-7 rounded-full bg-teal-600 items-center justify-center text-[10px] font-semibold text-white hidden">
-                                                    {user.name.charAt(0).toUpperCase()}
+                                    <tr key={user._id} className="hover:bg-white/[0.03] transition-colors border-b border-white/[0.02] last:border-0">
+                                        <td className="px-6 py-5">
+                                            <div className="flex items-center gap-4">
+                                                <div className="relative">
+                                                  <img
+                                                      src={user.avatar?.url}
+                                                      alt={user.name}
+                                                      className="h-11 w-11 rounded-2xl object-cover bg-neutral-800 border border-white/10 ring-4 ring-white/[0.02]"
+                                                      onError={(e) => {
+                                                          e.target.onerror = null;
+                                                          e.target.style.display = 'none';
+                                                          e.target.nextSibling.style.display = 'flex';
+                                                      }}
+                                                  />
+                                                  <div className="h-11 w-11 rounded-2xl bg-gradient-to-tr from-teal-600 to-teal-400 items-center justify-center text-sm font-black text-white hidden border border-teal-400/20">
+                                                      {user.name.charAt(0).toUpperCase()}
+                                                  </div>
                                                 </div>
-                                                <div className="flex items-center gap-1.5">
-                                                    <span className="text-sm font-medium text-white">{user.name}</span>
-                                                    {user.isMaster && <Crown className="h-3.5 w-3.5 text-amber-400" title="Master Account" />}
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-base font-bold text-white tracking-tight">{user.name}</span>
+                                                    {user.isMaster && <Crown className="h-4 w-4 text-amber-400 fill-amber-400/20" title="Master Account" />}
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3 text-sm text-neutral-400 hidden sm:table-cell">{user.email}</td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-6 py-5 text-base text-neutral-400 font-medium hidden sm:table-cell tracking-tight">{user.email}</td>
+                                        <td className="px-6 py-5">
                                             <span className={`badge ${user.role === "Admin" ? "badge-purple" : "badge-blue"}`}>{user.role}</span>
                                         </td>
-                                        <td className="px-4 py-3 text-sm text-neutral-500 hidden md:table-cell">{new Date(user.createdAt).toLocaleDateString()}</td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-1">
+                                        <td className="px-6 py-5 text-base text-neutral-500 font-medium hidden md:table-cell tracking-tight">{new Date(user.createdAt).toLocaleDateString()}</td>
+                                        <td className="px-6 py-5">
+                                            <div className="flex items-center gap-2">
                                                 {canPromoteUser(user) && (
-                                                    <button onClick={() => handlePromoteClick(user)} className="p-1.5 rounded-md text-neutral-500 hover:text-teal-400 hover:bg-teal-600/10 transition-colors" title="Promote to Admin">
-                                                        <ShieldCheck className="h-3.5 w-3.5" />
+                                                    <button onClick={() => handlePromoteClick(user)} className="p-2.5 rounded-xl text-neutral-500 hover:text-white hover:bg-teal-500/10 transition-all border border-transparent hover:border-teal-500/20" title="Promote to Admin">
+                                                        <ShieldCheck className="h-5 w-5" />
                                                     </button>
                                                 )}
                                                 {canDemoteUser(user) && (
-                                                    <button onClick={() => handleDemoteClick(user)} className="p-1.5 rounded-md text-neutral-500 hover:text-amber-400 hover:bg-amber-600/10 transition-colors" title="Demote to User">
-                                                        <ShieldOff className="h-3.5 w-3.5" />
+                                                    <button onClick={() => handleDemoteClick(user)} className="p-2.5 rounded-xl text-neutral-500 hover:text-white hover:bg-amber-500/10 transition-all border border-transparent hover:border-amber-500/20" title="Demote to User">
+                                                        <ShieldOff className="h-5 w-5" />
                                                     </button>
                                                 )}
                                                 {canDeleteUser(user) && (
-                                                    <button onClick={() => handleDeleteClick(user)} className="p-1.5 rounded-md text-neutral-500 hover:text-red-400 hover:bg-red-600/10 transition-colors" title="Delete">
-                                                        <Trash2 className="h-3.5 w-3.5" />
+                                                    <button onClick={() => handleDeleteClick(user)} className="p-2.5 rounded-xl text-neutral-500 hover:text-red-400 hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20" title="Delete Account">
+                                                        <Trash2 className="h-5 w-5" />
                                                     </button>
                                                 )}
                                             </div>
@@ -306,17 +308,17 @@ const UserManagement = () => {
             {/* Promote Modal */}
             {showPromoteModal && userToPromote && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => { setShowPromoteModal(false); setUserToPromote(null); }}>
-                    <div className="card p-6 max-w-sm w-full text-center" onClick={(e) => e.stopPropagation()}>
-                        <div className="w-10 h-10 rounded-full bg-teal-600/10 flex items-center justify-center mx-auto mb-3">
-                            <ShieldCheck className="h-5 w-5 text-teal-400" />
+                    <div className="card p-8 max-w-md w-full text-center" onClick={(e) => e.stopPropagation()}>
+                        <div className="w-16 h-16 rounded-full bg-teal-600/10 flex items-center justify-center mx-auto mb-6">
+                            <ShieldCheck className="h-8 w-8 text-teal-400" />
                         </div>
-                        <h2 className="text-lg font-semibold text-white mb-2">Promote to Admin</h2>
-                        <p className="text-sm text-neutral-400 mb-5">
+                        <h2 className="text-xl font-semibold text-white mb-3">Promote to Admin</h2>
+                        <p className="text-base text-neutral-400 mb-8">
                             Give <span className="text-white font-medium">{userToPromote.name}</span> full admin privileges?
                         </p>
-                        <div className="flex gap-3">
-                            <button onClick={handlePromoteConfirm} className="flex-1 btn-primary text-sm">Promote</button>
-                            <button onClick={() => { setShowPromoteModal(false); setUserToPromote(null); }} className="flex-1 btn-secondary text-sm">Cancel</button>
+                        <div className="flex gap-4">
+                            <button onClick={handlePromoteConfirm} className="flex-1 btn-primary text-base py-3">Promote</button>
+                            <button onClick={() => { setShowPromoteModal(false); setUserToPromote(null); }} className="flex-1 btn-secondary text-base py-3">Cancel</button>
                         </div>
                     </div>
                 </div>

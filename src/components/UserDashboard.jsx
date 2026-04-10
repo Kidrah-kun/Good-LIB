@@ -63,10 +63,12 @@ const UserDashboard = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-12">
       <div>
-        <h1 className="text-xl font-semibold text-white mb-1">Welcome back, {user?.name}</h1>
-        <p className="text-sm text-neutral-500">Here's your reading overview.</p>
+        <h1 className="text-4xl font-black text-white mb-2 tracking-tight italic bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-teal-400">
+          Welcome back, {user?.name}
+        </h1>
+        <p className="text-lg text-neutral-400 font-medium tracking-tight">Access your library stats and active borrows below.</p>
       </div>
 
       {loading ? (
@@ -75,64 +77,70 @@ const UserDashboard = () => {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {statCards.map((stat, i) => {
               const Icon = stat.icon;
               return (
-                <div key={i} className="card p-4">
-                  <div className={`w-8 h-8 rounded-lg ${stat.color} flex items-center justify-center mb-3`}>
-                    <Icon className="h-4 w-4" />
+                <div key={i} className="card p-6 group">
+                  <div className={`w-10 h-10 rounded-lg ${stat.color} flex items-center justify-center mb-4 shadow-inner`}>
+                    <Icon className="h-5 w-5" />
                   </div>
-                  <p className="text-2xl font-bold text-white mb-0.5">{stat.value}</p>
-                  <p className="text-xs text-neutral-500 font-medium">{stat.title}</p>
+                  <p className="text-2xl font-black text-white mb-1 tracking-tight">{stat.value}</p>
+                  <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-[0.2em]">{stat.title}</p>
                 </div>
               );
             })}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Quick Actions */}
-            <div className="card p-5">
-              <h2 className="text-sm font-medium text-neutral-400 mb-3 uppercase tracking-wider">Quick Actions</h2>
-              <div className="space-y-1.5">
+            <div className="card p-10">
+              <h2 className="text-xs font-black text-teal-400 mb-8 uppercase tracking-[0.3em]">Services</h2>
+              <div className="space-y-3">
                 {quickActions.map((action, i) => {
                   const Icon = action.icon;
                   return (
                     <button
                       key={i}
                       onClick={() => navigate(action.path)}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-neutral-800 transition-colors group text-left"
+                      className="w-full flex items-center gap-5 px-5 py-4 rounded-2xl hover:bg-white/[0.04] transition-all group text-left border border-transparent hover:border-white/[0.05]"
                     >
-                      <Icon className={`h-4 w-4 ${action.accent} shrink-0`} />
-                      <span className="text-sm text-neutral-300 flex-1">{action.label}</span>
-                      <ArrowRight className="h-3.5 w-3.5 text-neutral-700 group-hover:text-neutral-400 transition-colors" />
+                      <div className={`w-10 h-10 rounded-xl bg-white/[0.03] flex items-center justify-center ${action.accent} border border-white/[0.05]`}>
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <span className="text-base text-neutral-200 font-bold flex-1">{action.label}</span>
+                      <ArrowRight className="h-4 w-4 text-neutral-700 group-hover:text-teal-400 transition-all group-hover:translate-x-1" />
                     </button>
                   );
                 })}
-                <button
-                  onClick={() => setShowDeleteModal(true)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-red-600/5 transition-colors group text-left mt-2 border-t border-neutral-800 pt-3"
-                >
-                  <Trash2 className="h-4 w-4 text-red-500 shrink-0" />
-                  <span className="text-sm text-red-400">Delete Account</span>
-                </button>
+                <div className="pt-4 mt-4 border-t border-white/[0.05]">
+                  <button
+                    onClick={() => setShowDeleteModal(true)}
+                    className="w-full flex items-center gap-5 px-5 py-4 rounded-2xl hover:bg-red-500/10 transition-all group text-left border border-transparent hover:border-red-500/20"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500">
+                      <Trash2 className="h-5 w-5" />
+                    </div>
+                    <span className="text-base text-red-400 font-bold">Delete Account</span>
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Account Info */}
-            <div className="card p-5">
-              <h2 className="text-sm font-medium text-neutral-400 mb-3 uppercase tracking-wider">Account</h2>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center py-2 border-b border-neutral-800">
-                  <span className="text-xs text-neutral-500 uppercase tracking-wider">Name</span>
-                  <span className="text-sm text-white font-medium">{user?.name}</span>
+            <div className="card p-10">
+              <h2 className="text-xs font-black text-neutral-500 mb-8 uppercase tracking-[0.3em]">Access Profile</h2>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-5 border-b border-white/[0.05]">
+                  <span className="text-xs font-black text-neutral-500 uppercase tracking-widest pl-1">Legal Name</span>
+                  <span className="text-lg text-white font-black tracking-tight">{user?.name}</span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-neutral-800">
-                  <span className="text-xs text-neutral-500 uppercase tracking-wider">Email</span>
-                  <span className="text-sm text-white font-medium">{user?.email}</span>
+                <div className="flex justify-between items-center py-5 border-b border-white/[0.05]">
+                  <span className="text-xs font-black text-neutral-500 uppercase tracking-widest pl-1">Email Address</span>
+                  <span className="text-lg text-white font-bold truncate tracking-tight">{user?.email}</span>
                 </div>
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-xs text-neutral-500 uppercase tracking-wider">Role</span>
+                <div className="flex justify-between items-center py-5">
+                  <span className="text-xs font-black text-neutral-500 uppercase tracking-widest pl-1">Membership Rank</span>
                   <span className={`badge ${user?.role === "Admin" ? "badge-purple" : "badge-blue"}`}>
                     {user?.role}
                   </span>

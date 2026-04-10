@@ -52,10 +52,10 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-12">
       <div>
-        <h1 className="text-xl font-semibold text-white mb-1">Admin Dashboard</h1>
-        <p className="text-sm text-neutral-500">Overview of your library system.</p>
+        <h1 className="text-4xl font-black text-white mb-2 tracking-tight">Admin Dashboard</h1>
+        <p className="text-lg text-neutral-400 font-medium tracking-tight">System overview and library health metrics.</p>
       </div>
 
       {loading ? (
@@ -64,42 +64,42 @@ const AdminDashboard = () => {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {statCards.map((stat, i) => {
               const Icon = stat.icon;
               return (
                 <button
                   key={i}
                   onClick={() => navigate(stat.path)}
-                  className="card-hover p-4 text-left group"
+                  className="card-hover p-6 text-left group"
                 >
-                  <div className={`w-8 h-8 rounded-lg ${stat.color} flex items-center justify-center mb-3`}>
-                    <Icon className="h-4 w-4" />
+                  <div className={`w-10 h-10 rounded-lg ${stat.color} flex items-center justify-center mb-4 shadow-inner`}>
+                    <Icon className="h-5 w-5" />
                   </div>
-                  <p className="text-2xl font-bold text-white mb-0.5">{stat.value}</p>
-                  <p className="text-xs text-neutral-500 font-medium">{stat.title}</p>
+                  <p className="text-2xl font-black text-white mb-1 tracking-tight">{stat.value}</p>
+                  <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-[0.2em]">{stat.title}</p>
                 </button>
               );
             })}
           </div>
 
           <div>
-            <h2 className="text-sm font-medium text-neutral-400 mb-3 uppercase tracking-wider">Quick Actions</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <h2 className="text-xs font-black text-teal-400 mb-6 uppercase tracking-[0.3em]">Quick Management</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {quickActions.map((action, i) => {
                 const Icon = action.icon;
                 return (
                   <button
                     key={i}
                     onClick={() => navigate(action.path)}
-                    className="card-hover p-4 text-left group flex items-start gap-3"
+                    className="card-hover p-8 text-left group flex items-start gap-4"
                   >
-                    <Icon className={`h-5 w-5 ${action.accent} mt-0.5 shrink-0`} />
+                    <Icon className={`h-7 w-7 ${action.accent} mt-0.5 shrink-0`} />
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-medium text-white mb-0.5">{action.title}</h3>
-                      <p className="text-xs text-neutral-500">{action.desc}</p>
+                      <h3 className="text-lg font-bold text-white mb-1 tracking-tight">{action.title}</h3>
+                      <p className="text-sm text-neutral-500 font-medium leading-relaxed">{action.desc}</p>
                     </div>
-                    <ArrowRight className="h-4 w-4 text-neutral-600 group-hover:text-neutral-400 transition-colors shrink-0 mt-0.5" />
+                    <ArrowRight className="h-5 w-5 text-neutral-700 group-hover:text-teal-400 transition-all group-hover:translate-x-1 shrink-0 mt-1" />
                   </button>
                 );
               })}

@@ -89,36 +89,36 @@ const BookManagement = () => {
   const outOfStock = books.filter(b => !b.availability).length;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-12">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div>
-          <h1 className="text-xl font-semibold text-white mb-0.5">Books</h1>
-          <p className="text-xs text-neutral-500">
-            {books.length} total · {outOfStock} out of stock · ${totalValue.toFixed(0)} inventory value
+          <h1 className="text-4xl font-black text-white mb-2 tracking-tight">Books</h1>
+          <p className="text-lg text-neutral-400 font-medium tracking-tight">
+            {books.length} total books · {outOfStock} out of stock · <span className="text-teal-400">${totalValue.toFixed(0)}</span> total inventory value
           </p>
         </div>
         <button
           onClick={() => { resetForm(); setShowModal(true); }}
-          className="btn-primary flex items-center gap-2 text-sm"
+          className="btn-primary flex items-center gap-3 shadow-teal-500/20"
         >
-          <Plus className="h-4 w-4" />
-          <span className="hidden sm:inline">Add Book</span>
+          <Plus className="h-5 w-5" />
+          <span className="font-bold">Add New Book</span>
         </button>
       </div>
 
       {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 h-4 w-4" />
+      <div className="relative group">
+        <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-500 h-5 w-5 group-focus-within:text-teal-400 transition-colors" />
         <input
           type="text"
-          placeholder="Search books..."
+          placeholder="Search catalog by title, author or category..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="input-field pl-10 !py-2.5 text-sm"
+          className="input-field pl-14 py-5 text-lg placeholder:text-neutral-600"
         />
         {searchTerm && (
-          <button onClick={() => setSearchTerm("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white">
-            <X className="h-4 w-4" />
+          <button onClick={() => setSearchTerm("")} className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition-colors">
+            <X className="h-5 w-5" />
           </button>
         )}
       </div>
@@ -142,44 +142,44 @@ const BookManagement = () => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-neutral-800">
-                  <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider">Title</th>
-                  <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider">Author</th>
-                  <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider hidden md:table-cell">Category</th>
-                  <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider">Price</th>
-                  <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider">Qty</th>
-                  <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider">Status</th>
-                  <th className="px-4 py-3 text-left text-[10px] font-medium text-neutral-500 uppercase tracking-wider w-20"></th>
+                <tr className="border-b border-white/[0.05] bg-white/[0.02]">
+                  <th className="px-6 py-5 text-left text-xs font-black text-neutral-500 uppercase tracking-[0.2em]">Title</th>
+                  <th className="px-6 py-5 text-left text-xs font-black text-neutral-500 uppercase tracking-[0.2em]">Author</th>
+                  <th className="px-6 py-5 text-left text-xs font-black text-neutral-500 uppercase tracking-[0.2em] hidden md:table-cell">Category</th>
+                  <th className="px-6 py-5 text-left text-xs font-black text-neutral-500 uppercase tracking-[0.2em]">Price</th>
+                  <th className="px-6 py-5 text-left text-xs font-black text-neutral-500 uppercase tracking-[0.2em]">Qty</th>
+                  <th className="px-6 py-5 text-left text-xs font-black text-neutral-500 uppercase tracking-[0.2em]">Status</th>
+                  <th className="px-6 py-5 text-left text-xs font-black text-neutral-500 uppercase tracking-[0.2em] w-28">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-800/50">
                 {filteredBooks.map((book) => (
-                  <tr key={book._id} className="hover:bg-neutral-800/30 transition-colors">
-                    <td className="px-4 py-3 text-sm font-medium text-white max-w-[200px] truncate">{book.title}</td>
-                    <td className="px-4 py-3 text-sm text-neutral-400 max-w-[140px] truncate">{book.author}</td>
-                    <td className="px-4 py-3 hidden md:table-cell"><span className="badge badge-purple">{book.category || 'Other'}</span></td>
-                    <td className="px-4 py-3 text-sm text-neutral-400">${book.price}</td>
-                    <td className="px-4 py-3 text-sm text-neutral-400">{book.quantity}</td>
-                    <td className="px-4 py-3">
+                  <tr key={book._id} className="hover:bg-white/[0.03] transition-colors border-b border-white/[0.02] last:border-0">
+                    <td className="px-6 py-5 text-base font-bold text-white max-w-[240px] truncate tracking-tight">{book.title}</td>
+                    <td className="px-6 py-5 text-base text-neutral-400 max-w-[160px] truncate font-medium">{book.author}</td>
+                    <td className="px-6 py-5 hidden md:table-cell"><span className="badge badge-purple">{book.category || 'Other'}</span></td>
+                    <td className="px-6 py-5 text-base text-teal-400 font-bold">${book.price}</td>
+                    <td className="px-6 py-5 text-base text-neutral-300 font-medium">{book.quantity}</td>
+                    <td className="px-6 py-5">
                       <span className={`badge ${book.availability ? "badge-green" : "badge-red"}`}>
-                        {book.availability ? "In Stock" : "Out"}
+                        {book.availability ? "In Stock" : "Out of Stock"}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-1">
-                        <button onClick={() => handleEdit(book)} className="p-1.5 rounded-md text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors" title="Edit">
-                          <Edit className="h-3.5 w-3.5" />
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => handleEdit(book)} className="p-2.5 rounded-xl text-neutral-500 hover:text-white hover:bg-white/10 transition-all" title="Edit">
+                          <Edit className="h-5 w-5" />
                         </button>
                         <button
                           onClick={() => handleDelete(book._id)}
                           disabled={deletingId === book._id}
-                          className="p-1.5 rounded-md text-neutral-500 hover:text-red-400 hover:bg-red-600/10 transition-colors disabled:opacity-50"
+                          className="p-2.5 rounded-xl text-neutral-500 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
                           title="Delete"
                         >
                           {deletingId === book._id ? (
-                            <div className="w-3.5 h-3.5 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin"></div>
+                            <div className="w-5 h-5 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin"></div>
                           ) : (
-                            <Trash2 className="h-3.5 w-3.5" />
+                            <Trash2 className="h-5 w-5" />
                           )}
                         </button>
                       </div>
@@ -199,12 +199,12 @@ const BookManagement = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => { setShowModal(false); resetForm(); }}>
-          <div className="card p-6 max-w-lg w-full max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-semibold text-white">{editMode ? "Edit Book" : "Add Book"}</h2>
-              <button onClick={() => { setShowModal(false); resetForm(); }} className="p-1 text-neutral-500 hover:text-white transition-colors">
-                <X className="h-5 w-5" />
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-6" onClick={() => { setShowModal(false); resetForm(); }}>
+          <div className="card p-10 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-[0_0_100px_rgba(0,0,0,0.8)] border-white/10" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-black text-white tracking-tight">{editMode ? "Edit Book" : "Add New Book"}</h2>
+              <button onClick={() => { setShowModal(false); resetForm(); }} className="p-2 text-neutral-500 hover:text-white hover:bg-white/10 rounded-full transition-all">
+                <X className="h-6 w-6" />
               </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">

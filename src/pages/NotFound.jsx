@@ -4,8 +4,8 @@ import { BookOpen, ArrowLeft } from "lucide-react";
 
 const NotFound = () => {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4">
-            <div className="text-center">
+        <div className="min-h-screen flex items-center justify-center bg-transparent px-4">
+            <div className="text-center relative z-10 p-12 rounded-2xl bg-[#0a0a0a]/60 backdrop-blur-md border border-white/[0.05] shadow-2xl">
                 <div className="w-16 h-16 rounded-2xl bg-teal-600/10 flex items-center justify-center mx-auto mb-6">
                     <BookOpen className="h-8 w-8 text-teal-400" />
                 </div>
